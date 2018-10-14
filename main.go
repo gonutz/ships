@@ -37,7 +37,7 @@ func main() {
 	)
 	state := stateSettingShips
 	var ships []ship
-	var sea seaField
+	var home, sea seaField
 
 	restart := func() {
 		ships = []ship{
@@ -48,6 +48,7 @@ func main() {
 			newShip(2),
 		}
 		state = stateSettingShips
+		home = seaField{}
 		sea = seaField{}
 	}
 	restart()
@@ -133,6 +134,18 @@ func main() {
 						break
 					}
 				}
+			} else {
+				tileX := (mx - tileSize) / tileSize
+				tileY := (my - tileSize) / tileSize
+				if 0 <= tileX && tileX < 10 && 0 <= tileY && tileY < 10 {
+					if len(window.Clicks()) > 0 {
+						if home[tileX][tileY] != seaEmpty {
+							home[tileX][tileY] = seaEmpty
+						} else {
+							home[tileX][tileY] = seaHit
+						}
+					}
+				}
 			}
 		}
 
@@ -157,10 +170,10 @@ func main() {
 		window.FillRect(tileSize, tileSize, 10*tileSize, 10*tileSize, seaColor)
 		window.FillRect(12*tileSize, tileSize, 10*tileSize, 10*tileSize, seaColor)
 
+		margin := tileSize / 4
 		{
 			col := draw.White
 			col.A = 0.1
-			margin := tileSize / 4
 			for y := 0; y < 10; y++ {
 				for x := 0; x < 10; x++ {
 					window.FillEllipse(
@@ -208,6 +221,20 @@ func main() {
 							draw.Gray,
 						)
 					}
+				}
+			}
+		}
+
+		for y := 0; y < 10; y++ {
+			for x := 0; x < 10; x++ {
+				if home[x][y] != seaEmpty {
+					window.FillEllipse(
+						(x+1)*tileSize+margin,
+						(y+1)*tileSize+margin,
+						tileSize-2*margin,
+						tileSize-2*margin,
+						draw.Black,
+					)
 				}
 			}
 		}
